@@ -1,76 +1,51 @@
-import { authService } from './auth';
-import { API_URL } from '@/config/api';
+import axios from 'axios';
+
+const API_PREFIX = '/api';
 
 export interface UserProfile {
-  id: string;
+  _id: string;
+  name: string;
   email: string;
-  role: {
-    _id: string;
-    name: string;
-    permissions: string[];
-  };
-  profile: {
-    firstName: string;
-    lastName: string;
-    phoneNumber: string;
-    address: {
-      street: string;
-      city: string;
-      state: string;
-      country: string;
-      postalCode: string;
-    };
-    dateOfBirth: string;
-    gender: string;
-    avatar: string | null;
-    bio: string;
-  };
-  preferences: {
-    language: string;
-    theme: string;
-    notifications: {
-      email: boolean;
-      push: boolean;
-    };
-  };
+  role: string;
   createdAt: string;
-  updatedAt: string;
 }
 
-export interface UserProfileResponse {
-  success: boolean;
-  data: UserProfile;
-}
+export const userService = {
+  async getProfile(token: string): Promise<UserProfile> {
+    const response = await axios.get(`${API_PREFIX}/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data.user;
+  },
 
-class UserService {
-  private baseUrl = API_URL;
-
-  async getProfile(): Promise<UserProfile> {
-    try {
-      const token = authService.getToken();
-      if (!token) {
-        throw new Error('No authentication token found');
+  async updateProfile(userId: string, userData: Partial<UserProfile>, token: string): Promise<UserProfile> {
+    const response = await axios.put(
+      `${API_PREFIX}/users/${userId}`,
+      userData,
+      {
+        headers: { Authorization: `Bearer ${token}` },
       }
+    );
+    return response.data.user;
+  },
 
-      const response = await fetch(`${this.baseUrl}/profile/me`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch user profile');
+  async changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+    token: string
+  ): Promise<void> {
+    await axios.put(
+      `${API_PREFIX}/users/${userId}/password`,
+      { currentPassword, newPassword },
+      {
+        headers: { Authorization: `Bearer ${token}` },
       }
+    );
+  },
 
-      const data: UserProfileResponse = await response.json();
-      return data.data;
-    } catch (error) {
-      console.error('Error fetching user profile:', error);
-      throw error;
-    }
-  }
-}
+  // Add more user-related methods as needed
+};
 
-export const userService = new UserService(); 
+// For backward compatibility
+export default userService;

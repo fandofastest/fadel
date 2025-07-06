@@ -1,51 +1,36 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { withAuth } from 'next-auth/middleware';
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-
-  // List of public routes that don't require authentication
-  const publicRoutes = ['/signin', '/signup'];
-
-  // Get accessToken from localStorage through a cookie
-  const accessToken = request.cookies.get('accessToken')?.value;
-
-  console.log('Middleware - Path:', pathname);
-  console.log('Middleware - Access Token:', accessToken ? '***' : 'none');
-
-  // If accessing a non-public route without token, redirect to signin
-  if (!publicRoutes.includes(pathname) && !accessToken) {
-    console.log('Middleware - Redirecting to signin');
-    const signInUrl = new URL('/signin', request.url);
-    signInUrl.searchParams.set('callbackUrl', pathname);
-    return NextResponse.redirect(signInUrl);
-  }
-
-  // If authenticated and trying to access auth pages, redirect to admin dashboard
-  if (accessToken && publicRoutes.includes(pathname)) {
-    console.log('Middleware - Redirecting to admin dashboard');
-    return NextResponse.redirect(new URL('/admin', request.url));
-  }
-
-  // If trying to access root path, redirect to admin dashboard
-  if (pathname === '/') {
-    console.log('Middleware - Redirecting root to admin dashboard');
-    return NextResponse.redirect(new URL('/admin', request.url));
-  }
-
-  // For authenticated users, allow the request to proceed even if the page doesn't exist
-  // This ensures the session remains valid
-  if (accessToken) {
-    console.log('Middleware - Allowing access to:', pathname);
+// Middleware sederhana yang hanya melindungi rute admin
+export default withAuth(
+  // Fungsi middleware dijalankan setelah otentikasi berhasil
+  function middleware(req) {
+    // Log untuk debugging
+    console.log('Middleware running for path:', req.nextUrl.pathname);
     return NextResponse.next();
+  },
+  {
+    callbacks: {
+      // Hanya izinkan akses jika pengguna memiliki token dan token memiliki role admin
+      authorized: ({ token, req }) => {
+        console.log('Token in middleware:', token); // Log the token for debugging
+        
+        // Cek token & role, tetapi lebih permisif dengan konsole log detail
+        const isAuthorized = !!token && token.role === 'admin';
+        console.log('Is authorized:', isAuthorized, 'Role:', token?.role);
+        
+        return isAuthorized;
+      }
+    },
+    pages: {
+      // Jika tidak terautentikasi, redirect ke halaman signin
+      signIn: '/signin',
+    },
   }
+);
 
-  console.log('Middleware - Allowing access to:', pathname);
-  return NextResponse.next();
-}
-
+// Hanya terapkan middleware ini ke rute admin
 export const config = {
-  matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
-  ],
-}; 
+  matcher: ['/admin/:path*'],
+};

@@ -1,170 +1,81 @@
-import { User } from '@/types/User';
-import { API_URL } from '@/config/api';
+import axios from 'axios';
 
-export interface LoginCredentials {
-  email: string;
-  password: string;
-}
-
-export interface RegisterData {
-  email: string;
-  password: string;
-  role: string;
-}
-
-export interface AuthResponse {
-  message: string;
-  user: User;
-  accessToken: string;
-  refreshToken: string;
-}
+const API_PREFIX = '/api';
 
 export const authService = {
-  async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    console.log('Attempting login to:', `${API_URL}/auth/login`);
-    console.log('With credentials:', { ...credentials, password: '***' });
+  async register(userData: { name: string; email: string; password: string; role?: string }) {
+    const response = await axios.post(`${API_PREFIX}/auth/register`, userData);
+    return response.data;
+  },
+
+  async login(credentials: { email: string; password: string }) {
+    const response = await axios.post(`${API_PREFIX}/auth/login`, credentials);
+    if (response.data.token) {
+      localStorage.setItem('token', response.data.token);
+    }
+    return response.data;
+  },
+
+  logout() {
+    localStorage.removeItem('token');
+  },
+
+  getCurrentUser() {
+    const token = this.getToken();
+    if (!token) return null;
+    
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      return JSON.parse(jsonPayload);
+    } catch (error) {
+      return null;
+    }
+  },
+
+  getToken() {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('token');
+    }
+    return null;
+  },
+
+  async getUserProfile() {
+    const token = this.getToken();
+    if (!token) return null;
 
     try {
-      const response = await fetch(`${API_URL}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(credentials),
+      const response = await axios.get(`${API_PREFIX}/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-
-      console.log('Login response status:', response.status);
-      console.log('Login response headers:', Object.fromEntries(response.headers.entries()));
-
-      if (!response.ok) {
-        const error = await response.json();
-        console.error('Login error response:', error);
-        throw new Error(error.message || 'Login failed');
-      }
-
-      const data = await response.json();
-      console.log('Login success data:', { 
-        ...data, 
-        accessToken: data.accessToken ? '***' : null,
-        refreshToken: data.refreshToken ? '***' : null 
-      });
-      
-      if (!data.accessToken) {
-        console.error('No access token received in response');
-        throw new Error('No access token received');
-      }
-
-      // Simpan token di localStorage
-      localStorage.setItem('accessToken', data.accessToken);
-      localStorage.setItem('refreshToken', data.refreshToken);
-
-      // Set cookie untuk middleware
-      document.cookie = `accessToken=${data.accessToken}; path=/; max-age=3600`; // 1 jam
-      document.cookie = `refreshToken=${data.refreshToken}; path=/; max-age=604800`; // 1 minggu
-
-      return data;
+      return response.data.user;
     } catch (error) {
-      console.error('Login error:', error);
-      throw error;
+      this.logout();
+      return null;
     }
   },
 
-  async register(data: RegisterData): Promise<AuthResponse> {
-    console.log('Attempting registration to:', `${API_URL}/auth/register`);
-    
-    const response = await fetch(`${API_URL}/auth/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify(data),
-    });
+  isAuthenticated() {
+    const token = this.getToken();
+    if (!token) return false;
 
-    console.log('Register response status:', response.status);
+    try {
+      const user = this.getCurrentUser();
+      if (!user) return false;
 
-    if (!response.ok) {
-      const error = await response.json();
-      console.error('Register error response:', error);
-      throw new Error(error.message || 'Registration failed');
+      // Check if token is expired
+      const decodedToken = JSON.parse(atob(token.split('.')[1]));
+      const currentTime = Date.now() / 1000;
+      
+      return decodedToken.exp > currentTime;
+    } catch (error) {
+      return false;
     }
-
-    const result = await response.json();
-    console.log('Register success data:', { 
-      ...result, 
-      accessToken: result.accessToken ? '***' : null,
-      refreshToken: result.refreshToken ? '***' : null 
-    });
-
-    // Simpan token di localStorage
-    if (result.accessToken) {
-      localStorage.setItem('accessToken', result.accessToken);
-      localStorage.setItem('refreshToken', result.refreshToken);
-
-      // Set cookie untuk middleware
-      document.cookie = `accessToken=${result.accessToken}; path=/; max-age=3600`; // 1 jam
-      document.cookie = `refreshToken=${result.refreshToken}; path=/; max-age=604800`; // 1 minggu
-    }
-
-    return result;
   },
-
-  async logout(): Promise<void> {
-    console.log('Attempting logout');
-    await fetch(`${API_URL}/auth/logout`, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-      },
-      credentials: 'include',
-    });
-
-    // Hapus token dari localStorage dan cookie
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    document.cookie = 'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    document.cookie = 'refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-
-    console.log('Logout completed');
-  },
-
-  async getCurrentUser(): Promise<User> {
-    console.log('Attempting to get current user');
-    const response = await fetch(`${API_URL}/profile/me`, {
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-      },
-      credentials: 'include',
-    });
-
-    console.log('Get current user response status:', response.status);
-
-    if (!response.ok) {
-      console.error('Failed to get current user');
-      throw new Error('Failed to get current user');
-    }
-
-    const user = await response.json();
-    console.log('Current user data:', user);
-    return user;
-  },
-
-  // Helper untuk mengecek apakah user sudah login
-  isAuthenticated(): boolean {
-    const token = localStorage.getItem('accessToken');
-    console.log('Checking authentication status:', !!token);
-    return !!token;
-  },
-
-  // Helper untuk mendapatkan token
-  getToken(): string | null {
-    const token = localStorage.getItem('accessToken');
-    console.log('Getting token:', token ? '***' : null);
-    return token;
-  },
-}; 
+};

@@ -4,11 +4,11 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
-import { useAuth } from "@/context/AuthContext";
+import { signOut, useSession } from "next-auth/react";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
-  const { profile, logout } = useAuth();
+  const { data: session } = useSession();
 
 function toggleDropdown(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
   e.stopPropagation();
@@ -21,8 +21,7 @@ function toggleDropdown(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
 
   const handleLogout = async () => {
     try {
-      await logout();
-      window.location.href = '/signin';
+      await signOut({ redirect: true, callbackUrl: '/signin' });
     } catch (error) {
       console.error('Logout failed:', error);
     }
@@ -35,22 +34,22 @@ function toggleDropdown(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         className="flex items-center text-gray-700 dark:text-gray-400 dropdown-toggle"
       >
         <span className="mr-3 overflow-hidden rounded-full h-11 w-11 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-          {profile?.profile?.avatar ? (
+          {session?.user?.image ? (
           <Image
             width={44}
             height={44}
-              src={profile.profile.avatar}
+            src={session.user.image}
             alt="User"
           />
           ) : (
             <span className="text-lg font-medium text-gray-600 dark:text-gray-300">
-              {profile?.profile?.firstName?.[0]}{profile?.profile?.lastName?.[0]}
+              {session?.user?.name?.[0] || 'A'}
             </span>
           )}
         </span>
 
         <span className="block mr-1 font-medium text-theme-sm">
-          {profile?.profile?.firstName} {profile?.profile?.lastName}
+          {session?.user?.name || 'Admin'}
         </span>
 
         <svg
@@ -80,13 +79,13 @@ function toggleDropdown(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
       >
         <div>
           <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-            {profile?.profile?.firstName} {profile?.profile?.lastName}
+            {session?.user?.name || 'Admin'}
           </span>
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-            {profile?.email}
+            {session?.user?.email || ''}
           </span>
           <span className="mt-1 block text-theme-xs text-gray-500 dark:text-gray-400">
-            {profile?.role?.name}
+            {session?.user?.role || 'admin'}
           </span>
         </div>
 
