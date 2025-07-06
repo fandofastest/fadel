@@ -52,11 +52,14 @@ export default function SignUpForm() {
   
   // Handle registration with individual parameters
   const handleRegister = async (name: string, email: string, password: string, phone: string) => {
-    if (register) {
-      // Call register with individual parameters instead of an object
-      return register(name, email, password, phone);
+    try {
+      // The AuthContext register function expects (name, email, password, role?)
+      // Phone is not a parameter in the AuthContext register function
+      await register(name, email, password);
+    } catch (error) {
+      console.error('Registration error:', error);
+      throw error;
     }
-    throw new Error('Register function is not available');
   };
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string>('');
@@ -136,7 +139,7 @@ export default function SignUpForm() {
             value={formData.name}
             onChange={handleChange}
             required
-            className="w-full px-4 py-3 text-sm border rounded-lg border-stroke bg-transparent outline-none focus:border-primary focus-visible:shadow-none dark:border-strokedark dark:bg-meta-4 dark:focus:border-primary"
+            className="w-full px-4 py-3 text-sm border rounded-lg text-gray-900 dark:text-white border-stroke bg-transparent outline-none focus:border-primary focus-visible:shadow-none dark:border-strokedark dark:bg-meta-4 dark:focus:border-primary"
           />
         </div>
 
@@ -150,7 +153,7 @@ export default function SignUpForm() {
             value={formData.email}
             onChange={handleChange}
             required
-            className="w-full px-4 py-3 text-sm border rounded-lg border-stroke bg-transparent outline-none focus:border-primary focus-visible:shadow-none dark:border-strokedark dark:bg-meta-4 dark:focus:border-primary"
+            className="w-full px-4 py-3 text-sm border rounded-lg text-gray-900 dark:text-white border-stroke bg-transparent outline-none focus:border-primary focus-visible:shadow-none dark:border-strokedark dark:bg-meta-4 dark:focus:border-primary"
           />
         </div>
 
@@ -164,7 +167,7 @@ export default function SignUpForm() {
             value={formData.phone}
             onChange={handleChange}
             required
-            className="w-full px-4 py-3 text-sm border rounded-lg border-stroke bg-transparent outline-none focus:border-primary focus-visible:shadow-none dark:border-strokedark dark:bg-meta-4 dark:focus:border-primary"
+            className="w-full px-4 py-3 text-sm border rounded-lg text-gray-900 dark:text-white border-stroke bg-transparent outline-none focus:border-primary focus-visible:shadow-none dark:border-strokedark dark:bg-meta-4 dark:focus:border-primary"
           />
         </div>
 
@@ -180,7 +183,7 @@ export default function SignUpForm() {
               onChange={handleChange}
               minLength={8}
               required
-              className="w-full px-4 py-3 text-sm border rounded-lg border-stroke bg-transparent outline-none focus:border-primary focus-visible:shadow-none dark:border-strokedark dark:bg-meta-4 dark:focus:border-primary"
+              className="w-full px-4 py-3 text-sm border rounded-lg text-gray-900 dark:text-white border-stroke bg-transparent outline-none focus:border-primary focus-visible:shadow-none dark:border-strokedark dark:bg-meta-4 dark:focus:border-primary"
             />
             <button
               type="button"
@@ -203,7 +206,7 @@ export default function SignUpForm() {
             value={formData.confirmPassword}
             onChange={handleChange}
             required
-            className="w-full px-4 py-3 text-sm border rounded-lg border-stroke bg-transparent outline-none focus:border-primary focus-visible:shadow-none dark:border-strokedark dark:bg-meta-4 dark:focus:border-primary"
+            className="w-full px-4 py-3 text-sm border rounded-lg text-gray-900 dark:text-white border-stroke bg-transparent outline-none focus:border-primary focus-visible:shadow-none dark:border-strokedark dark:bg-meta-4 dark:focus:border-primary"
           />
         </div>
       </div>

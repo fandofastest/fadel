@@ -1,9 +1,24 @@
+/**
+ * DEPRECATED: Modul autentikasi JWT Custom ini sudah tidak digunakan lagi sebagai sistem utama.
+ * Aplikasi sekarang menggunakan NextAuth untuk autentikasi dan manajemen sesi.
+ * File ini dipertahankan untuk backward compatibility atau fitur lain yang mungkin masih menggunakannya.
+ */
+
 import jwt from 'jsonwebtoken';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { IUser } from '@/models/User';
 
+// Tipe data untuk user dari token JWT
+export type JWTUserPayload = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+};
+
+// Secret key untuk JWT (sebaiknya dari env variable)
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-const JWT_EXPIRES_IN = '7d';
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
 
 export const generateToken = (user: IUser): string => {
   return jwt.sign(

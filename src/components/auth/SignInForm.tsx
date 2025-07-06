@@ -63,9 +63,6 @@ export default function SignInForm() {
     setLoading(true);
 
     try {
-      // Ambil URL callback dari parameter atau gunakan /admin sebagai default
-      const callbackUrl = searchParams.get('callbackUrl') || '/admin';
-      
       // Gunakan NextAuth signIn untuk autentikasi dengan credentials provider
       const result = await signIn('credentials', {
         redirect: false,
@@ -84,9 +81,32 @@ export default function SignInForm() {
         return;
       }
       
-      // Login berhasil - redirect ke callback URL
-      console.log('Login berhasil, redirect ke:', callbackUrl);
-      router.push(callbackUrl);
+      // Ambil sesi user untuk mendapatkan informasi role
+      const userSession = await fetch('/api/auth/session');
+      const session = await userSession.json();
+      console.log('User session:', session);
+      
+      // Redirect berdasarkan role
+      const userRole = session?.user?.role;
+      const callbackUrl = searchParams.get('callbackUrl');
+      
+      if (callbackUrl && callbackUrl !== '/admin') {
+        // Jika ada specific callbackUrl (bukan /admin), gunakan itu
+        console.log('Login berhasil, redirect ke callbackUrl:', callbackUrl);
+        router.push(callbackUrl);
+      } else if (userRole === 'admin') {
+        // Jika user admin, arahkan ke dashboard admin
+        console.log('Admin login, redirect ke /admin');
+        router.push('/admin');
+      } else if (userRole === 'customer') {
+        // Jika user customer, arahkan ke halaman member
+        console.log('Customer login, redirect ke /member');
+        router.push('/member');
+      } else {
+        // Default fallback
+        console.log('Login berhasil, redirect ke homepage');
+        router.push('/');
+      }
     } catch (err) {
       console.error('Login gagal:', err);
       setError('Terjadi kesalahan saat mencoba masuk. Silakan coba lagi.');

@@ -29,27 +29,12 @@ const navItems: NavItem[] = [
   {
     icon: <GridIcon />,
     name: "Dashboard",
-    path: "/admin/dashboard",
-  },
-  {
-    icon: <TableIcon />,
-    name: "Exams",
-    path: "/admin/exams",
-  },
-  {
-    icon: <ListIcon />,
-    name: "Questions",
-    path: "/admin/questions",
-  },
-  {
-    icon: <PieChartIcon />,
-    name: "Results",
-    path: "/admin/results",
+    path: "/admin",
   },
   {
     icon: <BoxCubeIcon />,
-    name: "Analytics",
-    path: "/admin/analytics",
+    name: "Courts",
+    path: "/admin/courts",
   },
 ];
 
@@ -60,9 +45,9 @@ const othersItems: NavItem[] = [
     path: "/admin/users",
   },
   {
-    icon: <PageIcon />,
-    name: "Roles",
-    path: "/admin/roles",
+    icon: <TableIcon />,
+    name: "Payment Methods",
+    path: "/admin/payment-methods",
   },
 ];
 

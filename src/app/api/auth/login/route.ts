@@ -3,6 +3,14 @@ import dbConnect from '@/lib/db';
 import User from '@/models/User';
 import { generateToken } from '@/lib/auth';
 
+/**
+ * DEPRECATED: Sistem autentikasi JWT Custom ini sudah tidak digunakan lagi.
+ * Aplikasi sekarang menggunakan NextAuth untuk autentikasi dan manajemen sesi.
+ * 
+ * Endpoint ini dipertahankan untuk tujuan backward compatibility,
+ * tetapi sebaiknya gunakan API NextAuth di /api/auth/[...nextauth] untuk login.
+ */
+
 export async function POST(request: Request) {
   try {
     await dbConnect();
