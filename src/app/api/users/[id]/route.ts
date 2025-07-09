@@ -46,9 +46,30 @@ export async function PUT(
     }
     const body = await request.json();
     
-    if (!body.name || !body.email || !body.role) {
+    // For member profile updates, we may not always update every field
+    // Check which fields are required based on what's being updated
+    const requiredFields = [];
+    
+    if (body.name === undefined || body.name === null || body.name.trim() === '') {
+      requiredFields.push('name');
+    }
+    
+    if (body.email === undefined || body.email === null || body.email.trim() === '') {
+      requiredFields.push('email');
+    }
+    
+    if (body.phone === undefined || body.phone === null || body.phone.trim() === '') {
+      requiredFields.push('phone');
+    }
+    
+    // If we're updating role (mainly for admin updates), ensure it's provided
+    if (body.role !== undefined && (body.role === null || body.role.trim() === '')) {
+      requiredFields.push('role');
+    }
+    
+    if (requiredFields.length > 0) {
       return NextResponse.json(
-        { success: false, message: 'Name, email, and role are required' },
+        { success: false, message: `Missing required fields: ${requiredFields.join(', ')}` },
         { status: 400 }
       );
     }
@@ -66,12 +87,26 @@ export async function PUT(
       );
     }
     
-    // Prepare update data
-    const updateData = {
+    // Define the type to include all possible fields
+    interface UpdateData {
+      name: string;
+      email: string;
+      phone: string;
+      passwordHash?: string; // Optional passwordHash field
+      role?: string; // Make role optional for member profile updates
+    }
+
+    // Prepare update data - only include fields that are provided
+    const updateData: UpdateData = {
       name: body.name,
       email: body.email,
-      role: body.role
+      phone: body.phone
     };
+    
+    // Only include role if it's provided (might be omitted in profile updates)
+    if (body.role !== undefined) {
+      updateData.role = body.role;
+    }
     
     // If password is provided, update it
     if (body.password) {
@@ -79,13 +114,35 @@ export async function PUT(
       updateData.passwordHash = body.password;
     }
     
-    // Use findOneAndUpdate with runValidators to ensure validation runs
-    // set new: true to return the updated document
-    const updatedUser = await User.findByIdAndUpdate(
-      params.id,
-      updateData,
-      { new: true, runValidators: true }
-    ).select('-passwordHash');
+    // Find user first, then update and save to ensure hooks run
+    const user = await User.findById(params.id);
+    
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: 'User not found' },
+        { status: 404 }
+      );
+    }
+    
+    // Update user fields
+    user.name = updateData.name;
+    user.email = updateData.email;
+    user.phone = updateData.phone;
+    
+    if (updateData.role !== undefined) {
+      user.role = updateData.role as 'customer' | 'admin';
+    }
+    
+    if (updateData.passwordHash) {
+      user.passwordHash = updateData.passwordHash;
+    }
+    
+    // Save to trigger pre-save hooks
+    await user.save();
+    
+    // Get clean user object without passwordHash
+    const updatedUser = user.toObject();
+    delete updatedUser.passwordHash;
     
     if (!updatedUser) {
       return NextResponse.json(

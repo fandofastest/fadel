@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema, Model } from 'mongoose';
 
 export interface ICourt extends Document {
   name: string;
@@ -36,4 +36,18 @@ const courtSchema = new Schema<ICourt>({
   timestamps: true
 });
 
-export default mongoose.models.Court || mongoose.model<ICourt>('Court', courtSchema);
+/**
+ * Pola singleton untuk model Mongoose
+ * Mencegah error "Schema hasn't been registered for model" di Next.js
+ */
+let CourtModel: Model<ICourt>;
+
+try {
+  // Coba dapatkan model yang sudah ada
+  CourtModel = mongoose.model<ICourt>('Court');
+} catch (e) {
+  // Jika model belum ada, buat model baru
+  CourtModel = mongoose.model<ICourt>('Court', courtSchema);
+}
+
+export default CourtModel;

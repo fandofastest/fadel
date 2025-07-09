@@ -7,12 +7,12 @@ export async function POST(request: Request) {
   try {
     await dbConnect();
     
-    const { name, email, password, role = 'customer' } = await request.json();
+    const { name, email, password, phone, role = 'customer' } = await request.json();
 
     // Validate input
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !phone) {
       return NextResponse.json(
-        { message: 'Name, email, and password are required' },
+        { message: 'Name, email, password, and phone number are required' },
         { status: 400 }
       );
     }
@@ -47,6 +47,7 @@ export async function POST(request: Request) {
     const user = new User({
       name,
       email,
+      phone,
       passwordHash: password, // Will be hashed by pre-save hook
       role: ['customer', 'admin'].includes(role) ? role : 'customer'
     });

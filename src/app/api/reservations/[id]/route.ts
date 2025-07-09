@@ -2,8 +2,12 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { nextAuthOptions } from '../../auth/[...nextauth]/options';
 import dbConnect from '@/lib/db';
-import Reservation from '@/models/Reservation';
 import mongoose from 'mongoose';
+import jwt from 'jsonwebtoken';
+import { Session } from 'next-auth';
+
+// Import models from central registry
+import { Court, Payment, Reservation } from '@/lib/models';
 
 // Helper untuk validasi ObjectId
 const isValidObjectId = (id: string) => mongoose.Types.ObjectId.isValid(id);
@@ -25,12 +29,78 @@ async function hasAccessToReservation(session: any, reservationId: string) {
 }
 
 // GET /api/reservations/[id] - Mendapatkan detail reservasi tertentu
+// Fungsi untuk mendapatkan session dari token Bearer
+async function getSessionFromBearerToken(request: Request): Promise<Session | null> {
+  const authHeader = request.headers.get('Authorization');
+  
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.substring(7); // Hapus 'Bearer ' dari string
+    try {
+      // Untuk debugging - tampilkan informasi token
+      console.log('Token received:', token.substring(0, 20) + '...');
+      console.log('NEXTAUTH_SECRET:', process.env.NEXTAUTH_SECRET ? 'Defined' : 'Undefined');
+      
+      let decoded: any;
+      try {
+        // Coba verifikasi dengan NEXTAUTH_SECRET
+        decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET as string);
+      } catch (verifyErr: any) {
+        // Jika verifikasi gagal, coba parse token tanpa verifikasi untuk debugging
+        console.error('Strict verification failed, trying to decode token:', verifyErr.message);
+        
+        // Parse token tanpa verifikasi (hanya untuk debugging)
+        const parts = token.split('.');
+        if (parts.length === 3) {
+          try {
+            const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
+            console.log('Token payload (unverified):', payload);
+            
+            // Gunakan token tanpa verifikasi hanya jika diperlukan (development mode)
+            if (process.env.NODE_ENV === 'development') {
+              decoded = payload;
+            }
+          } catch (parseErr) {
+            console.error('Failed to parse token payload:', parseErr);
+          }
+        }
+      }
+      
+      // Konversi ke format Session yang diharapkan NextAuth
+      if (decoded) {
+        const session: Session = {
+          expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Tambahkan expires 24 jam dari sekarang
+          user: {
+            id: decoded.id || decoded.sub,
+            name: decoded.name,
+            email: decoded.email,
+            role: decoded.role,
+            phone: decoded.phone,
+            image: decoded.image
+          }
+        };
+        return session;
+      }
+      return null;
+    } catch (err) {
+      console.error('Token processing failed:', err);
+      return null;
+    }
+  }
+  return null;
+}
+
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> | { id: string } }
 ) {
   try {
-    const session = await getServerSession(nextAuthOptions);
+    // Coba dapatkan session dari cookie (NextAuth default)
+    let session = await getServerSession(nextAuthOptions);
+    
+    // Jika tidak ada session dari cookie, coba dari Authorization header
+    if (!session || !session.user) {
+      session = await getSessionFromBearerToken(request);
+    }
     
     // Cek autentikasi
     if (!session || !session.user) {
@@ -40,7 +110,9 @@ export async function GET(
       );
     }
     
-    const { id } = params;
+    // Await params jika itu adalah Promise
+    const resolvedParams = ('then' in params) ? await params : params;
+    const { id } = resolvedParams;
     
     // Validasi ID
     if (!isValidObjectId(id)) {
@@ -60,10 +132,28 @@ export async function GET(
       );
     }
     
+    // Temukan reservasi tanpa populate payment dulu
     const reservation = await Reservation.findById(id)
       .populate('userId', 'name email')
-      .populate('courtId', 'name type price')
-      .populate('paymentId');
+      .populate('courtId', 'name type price');
+      
+    // Jika paymentId ada, ambil secara manual
+    if (reservation && reservation.paymentId) {
+      try {
+        // Use imported Payment model directly
+        const paymentData = await Payment.findById(reservation.paymentId);
+        
+        // Tambahkan data payment ke response
+        if (paymentData) {
+          const resObject = reservation.toObject();
+          resObject.paymentData = paymentData;
+          return NextResponse.json({ success: true, data: resObject });
+        }
+      } catch (paymentError) {
+        console.error('Error fetching payment data:', paymentError);
+        // Lanjutkan dengan data reservasi tanpa payment
+      }
+    }
     
     if (!reservation) {
       return NextResponse.json(
@@ -85,10 +175,16 @@ export async function GET(
 // PATCH /api/reservations/[id] - Update status reservasi
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> | { id: string } }
 ) {
   try {
-    const session = await getServerSession(nextAuthOptions);
+    // Coba dapatkan session dari cookie (NextAuth default)
+    let session = await getServerSession(nextAuthOptions);
+    
+    // Jika tidak ada session dari cookie, coba dari Authorization header
+    if (!session || !session.user) {
+      session = await getSessionFromBearerToken(request);
+    }
     
     // Cek autentikasi
     if (!session || !session.user) {
@@ -98,7 +194,9 @@ export async function PATCH(
       );
     }
     
-    const { id } = params;
+    // Await params jika itu adalah Promise
+    const resolvedParams = ('then' in params) ? await params : params;
+    const { id } = resolvedParams;
     
     // Validasi ID
     if (!isValidObjectId(id)) {
@@ -175,10 +273,16 @@ export async function PATCH(
 // DELETE /api/reservations/[id] - Menghapus reservasi (soft delete dengan status CANCELLED)
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> | { id: string } }
 ) {
   try {
-    const session = await getServerSession(nextAuthOptions);
+    // Coba dapatkan session dari cookie (NextAuth default)
+    let session = await getServerSession(nextAuthOptions);
+    
+    // Jika tidak ada session dari cookie, coba dari Authorization header
+    if (!session || !session.user) {
+      session = await getSessionFromBearerToken(request);
+    }
     
     // Cek autentikasi
     if (!session || !session.user) {
@@ -188,7 +292,9 @@ export async function DELETE(
       );
     }
     
-    const { id } = params;
+    // Await params jika itu adalah Promise
+    const resolvedParams = ('then' in params) ? await params : params;
+    const { id } = resolvedParams;
     
     // Validasi ID
     if (!isValidObjectId(id)) {

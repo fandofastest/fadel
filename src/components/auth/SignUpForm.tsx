@@ -53,9 +53,8 @@ export default function SignUpForm() {
   // Handle registration with individual parameters
   const handleRegister = async (name: string, email: string, password: string, phone: string) => {
     try {
-      // The AuthContext register function expects (name, email, password, role?)
-      // Phone is not a parameter in the AuthContext register function
-      await register(name, email, password);
+      // Updated AuthContext register function now expects (name, email, password, phone, role?)
+      await register(name, email, password, phone);
     } catch (error) {
       console.error('Registration error:', error);
       throw error;

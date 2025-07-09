@@ -1,6 +1,7 @@
 import SignInForm from "@/components/auth/SignInForm";
 import { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Masuk | Malay Futsal",
@@ -19,7 +20,9 @@ export default function SignIn() {
         </p>
       </div>
       
-      <SignInForm />
+      <Suspense fallback={<div className="flex items-center justify-center py-6">Loading...</div>}>
+        <SignInForm />
+      </Suspense>
       
       <div className="mt-6 text-center">
         <p className="text-sm text-gray-600 dark:text-gray-400">

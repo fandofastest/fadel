@@ -21,7 +21,7 @@ const DialogContainer = ({ children, ...props }: React.ComponentProps<typeof Mod
 );
 
 const DialogTitle = ({ children }: { children: React.ReactNode }) => (
-  <h2 className="text-xl font-semibold text-white dark:text-white px-6 pt-4">{children}</h2>
+  <h2 className="text-xl font-semibold text-gray-900 dark:text-white px-6 pt-4">{children}</h2>
 );
 
 const DialogContent = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => (
@@ -29,7 +29,7 @@ const DialogContent = ({ children, className = "" }: { children: React.ReactNode
 );
 
 const DialogActions = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => (
-  <div className={twMerge(`px-6 py-4 flex justify-end gap-3 border-t border-gray-700 dark:border-gray-700`, className)}>{children}</div>
+  <div className={twMerge(`px-6 py-4 flex justify-end gap-3 border-t border-gray-300 dark:border-gray-700`, className)}>{children}</div>
 );
 
 function getDayName(day: number) {
@@ -117,26 +117,26 @@ export default function PricingRulesDialog({ open, onClose, courtId }: {
 
   return (
     <DialogContainer isOpen={open} onClose={onClose}>
-      <div className="bg-gray-900 text-white">
+      <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
         <DialogTitle>Pengaturan Harga & Waktu</DialogTitle>
         
         <DialogContent>
           <div className="mb-4">
-            <div className="flex border-b border-gray-700 mb-4">
+            <div className="flex border-b border-gray-300 dark:border-gray-700 mb-4">
               <button
-                className={`px-4 py-2 font-medium text-sm ${activeTab === 'visual' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-gray-400 hover:text-gray-300'}`}
+                className={`px-4 py-2 font-medium text-sm ${activeTab === 'visual' ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'}`}
                 onClick={() => setActiveTab('visual')}
               >
                 Visualisasi
               </button>
               <button
-                className={`px-4 py-2 font-medium text-sm ${activeTab === 'table' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-gray-400 hover:text-gray-300'}`}
+                className={`px-4 py-2 font-medium text-sm ${activeTab === 'table' ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'}`}
                 onClick={() => setActiveTab('table')}
               >
                 Tabel Harga
               </button>
               <button
-                className={`px-4 py-2 font-medium text-sm ${activeTab === 'add' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-gray-400 hover:text-gray-300'}`}
+                className={`px-4 py-2 font-medium text-sm ${activeTab === 'add' ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'}`}
                 onClick={() => setActiveTab('add')}
               >
                 Tambah Harga
@@ -146,10 +146,10 @@ export default function PricingRulesDialog({ open, onClose, courtId }: {
         
         {/* Error Message */}
         {errorMessage && (
-          <div className="bg-red-900 border-l-4 border-red-500 p-4 mb-4">
+          <div className="bg-red-50 dark:bg-red-900 border-l-4 border-red-500 p-4 mb-4">
             <div className="flex">
               <div className="ml-3">
-                <p className="text-sm text-red-300">
+                <p className="text-sm text-red-800 dark:text-red-300">
                   {errorMessage}
                 </p>
               </div>
@@ -187,22 +187,22 @@ export default function PricingRulesDialog({ open, onClose, courtId }: {
           ) : activeTab === 'visual' ? (
             <PricingVisualizer rules={rules} />
           ) : activeTab === 'table' ? (
-            <div className="overflow-auto max-h-[60vh] border border-gray-700 dark:border-gray-700 rounded-md w-full max-w-[800px] mx-auto">
+            <div className="overflow-auto max-h-[60vh] border border-gray-300 dark:border-gray-700 rounded-md w-full max-w-[800px] mx-auto">
               <Table className="w-full table-fixed">
-                <TableHeader className="bg-gray-800 dark:bg-gray-900 sticky top-0">
+                <TableHeader className="bg-gray-100 dark:bg-gray-800 sticky top-0">
                   <TableRow>
-                    <TableCell className="px-3 py-3 text-sm font-medium text-white dark:text-white text-left w-1/6">Hari Mulai</TableCell>
-                    <TableCell className="px-3 py-3 text-sm font-medium text-white dark:text-white text-left w-1/6">Hari Selesai</TableCell>
-                    <TableCell className="px-3 py-3 text-sm font-medium text-white dark:text-white text-center w-1/6">Jam Mulai</TableCell>
-                    <TableCell className="px-3 py-3 text-sm font-medium text-white dark:text-white text-center w-1/6">Jam Selesai</TableCell>
-                    <TableCell className="px-3 py-3 text-sm font-medium text-white dark:text-white text-right w-1/6">Harga</TableCell>
-                    <TableCell className="px-3 py-3 text-sm font-medium text-white dark:text-white text-center w-1/6">Aksi</TableCell>
+                    <TableCell className="px-3 py-3 text-sm font-medium text-gray-900 dark:text-white text-left w-1/6">Hari Mulai</TableCell>
+                    <TableCell className="px-3 py-3 text-sm font-medium text-gray-900 dark:text-white text-left w-1/6">Hari Selesai</TableCell>
+                    <TableCell className="px-3 py-3 text-sm font-medium text-gray-900 dark:text-white text-center w-1/6">Jam Mulai</TableCell>
+                    <TableCell className="px-3 py-3 text-sm font-medium text-gray-900 dark:text-white text-center w-1/6">Jam Selesai</TableCell>
+                    <TableCell className="px-3 py-3 text-sm font-medium text-gray-900 dark:text-white text-right w-1/6">Harga</TableCell>
+                    <TableCell className="px-3 py-3 text-sm font-medium text-gray-900 dark:text-white text-center w-1/6">Aksi</TableCell>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {rules.length === 0 && !loading && (
                     <TableRow>
-                      <TableCell colSpan={6} className="px-3 py-6 text-gray-400 dark:text-gray-500 text-center">
+                      <TableCell colSpan={6} className="px-3 py-6 text-gray-500 dark:text-gray-400 text-center">
                         Tidak ada aturan harga yang ditemukan
                       </TableCell>
                     </TableRow>
@@ -210,13 +210,13 @@ export default function PricingRulesDialog({ open, onClose, courtId }: {
                   {rules.map((rule, index) => (
                     <TableRow 
                       key={rule._id} 
-                      className={`border-t border-gray-700 ${index % 2 === 0 ? 'bg-gray-900' : 'bg-gray-800'} hover:bg-gray-700 dark:hover:bg-gray-700 transition-colors`}
+                      className={`border-t border-gray-300 dark:border-gray-700 ${index % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-800'} hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors`}
                     >
-                      <TableCell className="px-3 py-3 text-sm text-gray-300 dark:text-gray-400 text-left">{getDayName(rule.startDayOfWeek)}</TableCell>
-                      <TableCell className="px-3 py-3 text-sm text-gray-300 dark:text-gray-400 text-left">{getDayName(rule.endDayOfWeek)}</TableCell>
-                      <TableCell className="px-3 py-3 text-sm text-gray-300 dark:text-gray-400 text-center font-medium">{rule.startHour}:00</TableCell>
-                      <TableCell className="px-3 py-3 text-sm text-gray-300 dark:text-gray-400 text-center font-medium">{rule.endHour}:00</TableCell>
-                      <TableCell className="px-3 py-3 text-sm text-gray-100 dark:text-gray-200 text-right font-semibold">Rp {rule.rate.toLocaleString('id-ID')}</TableCell>
+                      <TableCell className="px-3 py-3 text-sm text-gray-700 dark:text-gray-300 text-left">{getDayName(rule.startDayOfWeek)}</TableCell>
+                      <TableCell className="px-3 py-3 text-sm text-gray-700 dark:text-gray-300 text-left">{getDayName(rule.endDayOfWeek)}</TableCell>
+                      <TableCell className="px-3 py-3 text-sm text-gray-700 dark:text-gray-300 text-center font-medium">{rule.startHour}:00</TableCell>
+                      <TableCell className="px-3 py-3 text-sm text-gray-700 dark:text-gray-300 text-center font-medium">{rule.endHour}:00</TableCell>
+                      <TableCell className="px-3 py-3 text-sm text-gray-900 dark:text-gray-100 text-right font-semibold">Rp {rule.rate.toLocaleString('id-ID')}</TableCell>
                       <TableCell className="px-3 py-3 text-center">
                         <button
                           onClick={() => handleDeleteRule(rule._id)}
@@ -261,7 +261,7 @@ export default function PricingRulesDialog({ open, onClose, courtId }: {
           onClick={onClose} 
           variant="outline" 
           size="md"
-          className="text-white border-gray-600 hover:bg-gray-800 dark:hover:bg-gray-800"
+          className="text-gray-700 dark:text-white border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"
         >
           Tutup
         </Button>
@@ -270,7 +270,7 @@ export default function PricingRulesDialog({ open, onClose, courtId }: {
             onClick={() => setActiveTab('add')} 
             variant="primary" 
             size="md"
-            className="text-white dark:text-white"
+            className="text-white"
           >
             Tambah Harga
           </Button>

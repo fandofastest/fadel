@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { registerAllModels } from './models';
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/lapfutsal';
 
@@ -24,6 +25,9 @@ if (!global.mongoose) {
   global.mongoose = cached;
 }
 
+/**
+ * Connect to MongoDB and ensure all models are registered
+ */
 async function dbConnect(): Promise<typeof mongoose> {
   if (cached.conn) {
     return cached.conn;
@@ -39,6 +43,9 @@ async function dbConnect(): Promise<typeof mongoose> {
   
   try {
     cached.conn = await cached.promise;
+    
+    // Ensure all models are registered after connection is established
+    registerAllModels();
   } catch (e) {
     cached.promise = null;
     throw e;

@@ -3,7 +3,7 @@ import axios from 'axios';
 const API_PREFIX = '/api';
 
 export const authService = {
-  async register(userData: { name: string; email: string; password: string; role?: string }) {
+  async register(userData: { name: string; email: string; password: string; phone: string; role?: string }) {
     const response = await axios.post(`${API_PREFIX}/auth/register`, userData);
     return response.data;
   },

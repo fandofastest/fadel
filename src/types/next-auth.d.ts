@@ -3,30 +3,33 @@ import { JWT } from "next-auth/jwt"
 
 declare module "next-auth" {
   /**
-   * Menambahkan properti role dan id ke tipe User
+   * Menambahkan properti role, id, dan phone ke tipe User
    */
   interface User {
     id: string
     role?: string
+    phone?: string
   }
 
   /**
-   * Menambahkan properti role dan id ke session.user
+   * Menambahkan properti role, id, dan phone ke session.user
    */
   interface Session {
     user: {
       id: string
       role?: string
+      phone?: string
     } & DefaultSession["user"]
   }
 }
 
 declare module "next-auth/jwt" {
   /**
-   * Menambahkan properti role dan id ke token JWT
+   * Menambahkan properti role, id, dan phone ke token JWT
    */
   interface JWT {
     id?: string
     role?: string
+    phone?: string
   }
 }

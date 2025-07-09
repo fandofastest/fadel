@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Types } from "mongoose";
+import mongoose, { Schema, Document, Types, Model } from "mongoose";
 
 export interface IPricingRule extends Document {
   courtId: Types.ObjectId;
@@ -24,4 +24,18 @@ const PricingRuleSchema = new Schema<IPricingRule>({
 
 PricingRuleSchema.index({ courtId: 1, startDayOfWeek: 1, endDayOfWeek: 1, startHour: 1, endHour: 1 });
 
-export default mongoose.models.PricingRule || mongoose.model<IPricingRule>("PricingRule", PricingRuleSchema);
+/**
+ * Pola singleton untuk model Mongoose
+ * Mencegah error "Schema hasn't been registered for model" di Next.js
+ */
+let PricingRuleModel: Model<IPricingRule>;
+
+try {
+  // Coba dapatkan model yang sudah ada
+  PricingRuleModel = mongoose.model<IPricingRule>("PricingRule");
+} catch (e) {
+  // Jika model belum ada, buat model baru
+  PricingRuleModel = mongoose.model<IPricingRule>("PricingRule", PricingRuleSchema);
+}
+
+export default PricingRuleModel;

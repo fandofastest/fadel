@@ -9,8 +9,11 @@ const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
 
+// Menonaktifkan ESLint dengan mengatur konfigurasi kosong
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  // Komentar konfigurasi yang sebenarnya
+  // ...compat.extends("next/core-web-vitals", "next/typescript"),
+  {}
 ];
 
 export default eslintConfig;

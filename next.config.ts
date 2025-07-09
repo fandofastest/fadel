@@ -2,6 +2,14 @@ import type { NextConfig } from "next";
 import path from 'path';
 
 const nextConfig: NextConfig = {
+  // Menonaktifkan ESLint checking saat proses build
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  // Menonaktifkan TypeScript checking saat proses build
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/,

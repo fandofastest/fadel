@@ -13,9 +13,11 @@ import {
   PageIcon,
   PieChartIcon,
   PlugInIcon,
+  QrCodeIcon,
   TableIcon,
   UserCircleIcon,
 } from "../icons/index";
+import { FaFileInvoice, FaQrcode } from "react-icons/fa";
 import SidebarWidget from "./SidebarWidget";
 
 type NavItem = {
@@ -36,6 +38,16 @@ const navItems: NavItem[] = [
     name: "Courts",
     path: "/admin/courts",
   },
+  {
+    icon: <TableIcon />,
+    name: "Reservations",
+    path: "/admin/reservation",
+  },
+  {
+    icon: <FaQrcode size={16} />,
+    name: "Scan QR Code",
+    path: "/admin/scan-qr",
+  },
 ];
 
 const othersItems: NavItem[] = [
@@ -48,6 +60,11 @@ const othersItems: NavItem[] = [
     icon: <TableIcon />,
     name: "Payment Methods",
     path: "/admin/payment-methods",
+  },
+  {
+    icon: <FaFileInvoice size={16} />,
+    name: "Laporan Penjualan",
+    path: "/admin/sales-report",
   },
 ];
 
@@ -228,31 +245,18 @@ const AppSidebar: React.FC = () => {
           !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
         }`}
       >
-        <Link href="/admin/dashboard">
+        <Link href="/admin">
           {isExpanded || isHovered || isMobileOpen ? (
-            <>
-              <Image
-                className="dark:hidden"
-                src="/images/logo/logo.svg"
-                alt="Logo"
-                width={150}
-                height={40}
-              />
-              <Image
-                className="hidden dark:block"
-                src="/images/logo/logo-dark.svg"
-                alt="Logo"
-                width={150}
-                height={40}
-              />
-            </>
+            <svg width="170" height="40" viewBox="0 0 170 40" xmlns="http://www.w3.org/2000/svg">
+              <rect width="36" height="36" y="2" rx="8" fill="#4338CA" />
+              <text x="7" y="26" style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 700, fontSize: '16px', fill: 'white' }}>MF</text>
+              <text x="48" y="27" className="text-gray-800 dark:text-white" style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 600, fontSize: '20px' }}>Malay Futsal</text>
+            </svg>
           ) : (
-            <Image
-              src="/images/logo/logo-icon.svg"
-              alt="Logo"
-              width={32}
-              height={32}
-            />
+            <svg width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+              <rect width="36" height="36" rx="8" fill="#4338CA" />
+              <text x="7" y="26" style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 700, fontSize: '16px', fill: 'white' }}>MF</text>
+            </svg>
           )}
         </Link>
       </div>

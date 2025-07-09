@@ -33,7 +33,11 @@ export async function POST(request: Request) {
         { status: 409 }
       );
     }
-    const method = await PaymentMethod.create({ name: body.name });
+    const method = await PaymentMethod.create({
+  name: body.name,
+  code: body.code || '',
+  keterangan: body.keterangan || ''
+});
     return NextResponse.json({ success: true, data: method }, { status: 201 });
   } catch (error: any) {
     if (error.name === 'ValidationError') {
@@ -53,16 +57,19 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     await dbConnect();
-    const { id, name } = await request.json();
+    const { id, name, code, keterangan } = await request.json();
     if (!id || !name) {
       return NextResponse.json(
         { success: false, message: 'ID and name are required' },
         { status: 400 }
       );
     }
+    const updateFields: any = { name };
+    if (code !== undefined) updateFields.code = code;
+    if (keterangan !== undefined) updateFields.keterangan = keterangan;
     const updated = await PaymentMethod.findByIdAndUpdate(
       id,
-      { name },
+      updateFields,
       { new: true, runValidators: true }
     );
     if (!updated) {

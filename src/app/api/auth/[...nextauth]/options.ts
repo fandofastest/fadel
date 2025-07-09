@@ -41,7 +41,8 @@ export const nextAuthOptions: NextAuthOptions = {
           // Log informasi pengguna untuk debugging
           console.log("User authenticated:", { 
             id: user._id.toString(),
-            email: user.email, 
+            email: user.email,
+            phone: user.phone, 
             role: user.role 
           });
           
@@ -49,6 +50,7 @@ export const nextAuthOptions: NextAuthOptions = {
             id: user._id.toString(),
             name: user.name,
             email: user.email,
+            phone: user.phone,
             role: user.role,
           };
         } catch (error) {
@@ -63,6 +65,7 @@ export const nextAuthOptions: NextAuthOptions = {
       if (user) {
         token.role = user.role;
         token.id = user.id;
+        token.phone = user.phone;
       }
       return token;
     },
@@ -70,6 +73,7 @@ export const nextAuthOptions: NextAuthOptions = {
       if (session.user) {
         session.user.role = token.role as string;
         session.user.id = token.id as string;
+        session.user.phone = token.phone as string;
       }
       return session;
     },

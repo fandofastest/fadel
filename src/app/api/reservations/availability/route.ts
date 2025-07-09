@@ -54,9 +54,10 @@ export async function GET(request: Request) {
     const startOfDay = new Date(date.setHours(0, 0, 0, 0));
     const endOfDay = new Date(date.setHours(23, 59, 59, 999));
     
+    // Hanya status UNPAID, PAID, CHECKED_IN yang membuat slot tidak tersedia
     const reservations = await Reservation.find({
       date: { $gte: startOfDay, $lte: endOfDay },
-      status: { $nin: ['CANCELLED', 'EXPIRED'] },
+      status: { $in: ['UNPAID', 'PAID', 'CHECKED_IN'] },
       courtId: { $in: courts.map(court => court._id) }
     });
 
@@ -68,8 +69,7 @@ export async function GET(request: Request) {
         reservationsByCourtId[cId] = [];
       }
       reservationsByCourtId[cId].push({
-        startHour: res.startHour,
-        endHour: res.endHour,
+        slots: res.slots, // Gunakan slots dari reservation
         status: res.status
       });
     });
@@ -82,9 +82,9 @@ export async function GET(request: Request) {
       // Buat slot ketersediaan dari jam operasional
       const slots = [];
       for (let hour = operatingHours.start; hour < operatingHours.end; hour++) {
-        // Periksa apakah slot ini tersedia
+        // Periksa apakah slot ini tersedia (tidak ada di array slots reservasi)
         const isAvailable = !bookedSlots.some(
-          slot => (hour >= slot.startHour && hour < slot.endHour)
+          reservation => reservation.slots.includes(hour)
         );
         
         slots.push({

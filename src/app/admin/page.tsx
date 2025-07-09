@@ -1,10 +1,9 @@
 import { Metadata } from "next";
-import { EcommerceMetrics } from "@/components/ecommerce/EcommerceMetrics";
-import MonthlySalesChart from "@/components/ecommerce/MonthlySalesChart";
-import MonthlyTarget from "@/components/ecommerce/MonthlyTarget";
-import StatisticsChart from "@/components/ecommerce/StatisticsChart";
-import DemographicCard from "@/components/ecommerce/DemographicCard";
-import RecentOrders from "@/components/ecommerce/RecentOrders";
+import { ReservationMetrics } from "@/components/dashboard/ReservationMetrics";
+import MonthlyReservationChart from "@/components/dashboard/MonthlyReservationChart";
+import FieldUsageStatistics from "@/components/dashboard/FieldUsageStatistics";
+import RecentReservations from "@/components/dashboard/RecentReservations";
+import MonthlyTarget from "@/components/dashboard/MonthlyTarget";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
@@ -38,31 +37,23 @@ export default async function AdminDashboard() {
   console.log('Admin access granted to:', user.email);
 
   return (
-    <div className="p-4 sm:p-6">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+    <div className="p-4 sm:p-5">
+      <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">
         Selamat Datang, {session.user.name || 'Admin'}
       </h1>
       
-      <div className="grid grid-cols-12 gap-4 md:gap-6">
-        <div className="col-span-12 space-y-6 xl:col-span-7">
-          <EcommerceMetrics />
-          <MonthlySalesChart />
+      <div className="grid grid-cols-12 gap-4">
+        <div className="col-span-12 space-y-4 xl:col-span-8">
+          <ReservationMetrics />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <MonthlyReservationChart />
+            <FieldUsageStatistics />
+          </div>
         </div>
 
-        <div className="col-span-12 xl:col-span-5">
+        <div className="col-span-12 xl:col-span-4 space-y-4">
           <MonthlyTarget />
-        </div>
-
-        <div className="col-span-12 xl:col-span-7">
-          <StatisticsChart />
-        </div>
-
-        <div className="col-span-12 xl:col-span-5">
-          <DemographicCard />
-        </div>
-
-        <div className="col-span-12">
-          <RecentOrders />
+          <RecentReservations />
         </div>
       </div>
     </div>

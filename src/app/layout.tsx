@@ -1,5 +1,6 @@
 import { Outfit } from 'next/font/google';
 import './globals.css';
+import 'react-day-picker/dist/style.css';
 
 import { ThemeProvider } from '@/context/ThemeContext';
 import { SidebarProvider } from '@/context/SidebarContext';

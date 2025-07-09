@@ -95,11 +95,11 @@ export default function PricingRuleEditor({ courtId, onRuleCreated }: PricingRul
   };
 
   return (
-    <div className="border border-gray-700 rounded-lg p-4 mb-4 bg-gray-800">
-      <h3 className="text-md font-medium mb-3 text-white">Tambah Aturan Harga Baru</h3>
+    <div className="border border-gray-300 dark:border-gray-700 rounded-lg p-4 mb-4 bg-white dark:bg-gray-800">
+      <h3 className="text-md font-medium mb-3 text-gray-900 dark:text-white">Tambah Aturan Harga Baru</h3>
       
       {error && (
-        <div className="bg-red-900 text-red-300 p-2 rounded mb-3 text-sm">
+        <div className="bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 p-2 rounded mb-3 text-sm">
           {error}
         </div>
       )}
@@ -107,24 +107,24 @@ export default function PricingRuleEditor({ courtId, onRuleCreated }: PricingRul
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Hari</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Hari</label>
             <div className="flex gap-2">
               <select 
                 name="startDayOfWeek"
                 value={formData.startDayOfWeek}
                 onChange={handleChange}
-                className="rounded border border-gray-600 bg-gray-700 p-2 text-sm w-full text-white"
+                className="rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-2 text-sm w-full text-gray-900 dark:text-white"
               >
                 {days.map((day, i) => (
                   <option key={i} value={i}>{day}</option>
                 ))}
               </select>
-              <span className="self-center text-gray-300">s/d</span>
+              <span className="self-center text-gray-600 dark:text-gray-300">s/d</span>
               <select 
                 name="endDayOfWeek"
                 value={formData.endDayOfWeek}
                 onChange={handleChange}
-                className="rounded border border-gray-600 bg-gray-700 p-2 text-sm w-full text-white"
+                className="rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-2 text-sm w-full text-gray-900 dark:text-white"
               >
                 {days.map((day, i) => (
                   <option key={i} value={i}>{day}</option>
@@ -134,24 +134,24 @@ export default function PricingRuleEditor({ courtId, onRuleCreated }: PricingRul
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Waktu</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Waktu</label>
             <div className="flex gap-2">
               <select 
                 name="startHour"
                 value={formData.startHour}
                 onChange={handleChange}
-                className="rounded border border-gray-600 bg-gray-700 p-2 text-sm w-full text-white"
+                className="rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-2 text-sm w-full text-gray-900 dark:text-white"
               >
                 {Array.from({length: 24}, (_, i) => (
                   <option key={i} value={i}>{i}:00</option>
                 ))}
               </select>
-              <span className="self-center text-gray-300">s/d</span>
+              <span className="self-center text-gray-600 dark:text-gray-300">s/d</span>
               <select 
                 name="endHour"
                 value={formData.endHour}
                 onChange={handleChange}
-                className="rounded border border-gray-600 bg-gray-700 p-2 text-sm w-full text-white"
+                className="rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-2 text-sm w-full text-gray-900 dark:text-white"
               >
                 {Array.from({length: 24}, (_, i) => (
                   <option key={i} value={i}>{i}:00</option>
@@ -161,13 +161,13 @@ export default function PricingRuleEditor({ courtId, onRuleCreated }: PricingRul
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Harga (Rp)</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Harga (Rp)</label>
             <input 
               type="number" 
               name="rate"
               value={formData.rate}
               onChange={handleChange}
-              className="rounded border border-gray-600 bg-gray-700 p-2 text-sm w-full text-white" 
+              className="rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 p-2 text-sm w-full text-gray-900 dark:text-white" 
               placeholder="100000"
               min="0"
               step="10000" 
