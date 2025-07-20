@@ -158,7 +158,7 @@ export default function AdminReservationPage() {
                 <button
                     className="text-gray-400 hover:text-gray-800 dark:hover:text-white text-2xl font-bold"
                     onClick={() => setDatePickerOpen(false)}
-                    aria-label="Close"
+                    aria-label="Tutup"
                 >
                     &times;
                 </button>

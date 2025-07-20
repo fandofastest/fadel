@@ -149,8 +149,8 @@ export default function QRCodeScannerPage() {
           if (cameras.length > 1) {
             // Coba temukan kamera yang memiliki 'back' dalam namanya (atau variasinya)
             const backCamera = cameras.find(camera => 
-              camera.label.toLowerCase().includes('back') ||
-              camera.label.toLowerCase().includes('rear') ||
+              camera.label.toLowerCase().includes('belakang') ||
+              camera.label.toLowerCase().includes('belakang') ||
               camera.label.toLowerCase().includes('belakang')
             );
             

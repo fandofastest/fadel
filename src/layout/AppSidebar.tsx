@@ -30,22 +30,22 @@ type NavItem = {
 const navItems: NavItem[] = [
   {
     icon: <GridIcon />,
-    name: "Dashboard",
+    name: "Dasbor",
     path: "/admin",
   },
   {
     icon: <BoxCubeIcon />,
-    name: "Courts",
+    name: "Lapangan",
     path: "/admin/courts",
   },
   {
     icon: <TableIcon />,
-    name: "Reservations",
+    name: "Reservasi",
     path: "/admin/reservation",
   },
   {
     icon: <FaQrcode size={16} />,
-    name: "Scan QR Code",
+    name: "Scan QR",
     path: "/admin/scan-qr",
   },
 ];
@@ -53,12 +53,12 @@ const navItems: NavItem[] = [
 const othersItems: NavItem[] = [
   {
     icon: <UserCircleIcon />,
-    name: "Users",
+    name: "Pengguna",
     path: "/admin/users",
   },
   {
     icon: <TableIcon />,
-    name: "Payment Methods",
+    name: "Metode Pembayaran",
     path: "/admin/payment-methods",
   },
   {
@@ -279,8 +279,7 @@ const AppSidebar: React.FC = () => {
               </h2>
               {renderMenuItems(navItems, "main")}
             </div>
-
-            <div className="">
+            <div>
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
                   !isExpanded && !isHovered
@@ -289,7 +288,7 @@ const AppSidebar: React.FC = () => {
                 }`}
               >
                 {isExpanded || isHovered || isMobileOpen ? (
-                  "Others"
+                  "Lainnya"
                 ) : (
                   <HorizontaLDots />
                 )}

@@ -180,7 +180,7 @@ export default function ProfilePage() {
           <div className="space-y-3">
             <div>
               <label htmlFor="name" className="block mb-1 font-medium text-gray-700">
-                Name
+                Nama
               </label>
               <input
                 type="text"
@@ -208,7 +208,7 @@ export default function ProfilePage() {
 
             <div>
               <label htmlFor="phone" className="block mb-1 font-medium text-gray-700">
-                Phone
+                No. HP
               </label>
               <input
                 type="tel"
@@ -223,12 +223,12 @@ export default function ProfilePage() {
 
           {/* Change Password Section */}
           <div className="pt-4 border-t border-gray-100">
-            <h2 className="text-lg font-medium mb-3">Change Password</h2>
+            <h2 className="text-lg font-medium mb-3">Ubah Kata Sandi</h2>
             
             <div className="space-y-3">
               <div>
                 <label htmlFor="currentPassword" className="block mb-1 font-medium text-gray-700">
-                  Current Password
+                  Kata Sandi Saat Ini
                 </label>
                 <input
                   type={showPassword ? "text" : "password"}
@@ -241,7 +241,7 @@ export default function ProfilePage() {
 
               <div>
                 <label htmlFor="newPassword" className="block mb-1 font-medium text-gray-700">
-                  New Password
+                  Kata Sandi Baru
                 </label>
                 <input
                   type={showPassword ? "text" : "password"}
@@ -254,7 +254,7 @@ export default function ProfilePage() {
 
               <div>
                 <label htmlFor="confirmPassword" className="block mb-1 font-medium text-gray-700">
-                  Confirm New Password
+                  Konfirmasi Kata Sandi Baru
                 </label>
                 <input
                   type={showPassword ? "text" : "password"}
@@ -274,7 +274,7 @@ export default function ProfilePage() {
                   className="mr-2"
                 />
                 <label htmlFor="showPassword" className="text-gray-600">
-                  Show passwords
+                  Tampilkan kata sandi
                 </label>
               </div>
             </div>
@@ -289,11 +289,11 @@ export default function ProfilePage() {
             >
               {saving ? (
                 <>
-                  <FaSpinner className="animate-spin" size={14} /> Saving...
+                  <FaSpinner className="animate-spin" size={14} /> Menyimpan...
                 </>
               ) : (
                 <>
-                  <FaSave size={14} /> Save Changes
+                  <FaSave size={14} /> Simpan Perubahan
                 </>
               )}
             </button>
@@ -302,7 +302,7 @@ export default function ProfilePage() {
               onClick={handleCancel}
               className="bg-gray-200 text-gray-700 rounded px-4 py-2 flex items-center gap-2"
             >
-              <FaTimes size={14} /> Cancel
+              <FaTimes size={14} /> Batal
             </button>
           </div>
         </form>
