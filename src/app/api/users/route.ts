@@ -23,9 +23,9 @@ export async function POST(request: Request) {
     const body = await request.json();
     
     // Validate required fields
-    if (!body.name || !body.email || !body.password || !body.role) {
+    if (!body.name || !body.email || !body.phone || !body.password || !body.role) {
       return NextResponse.json(
-        { success: false, message: 'Name, email, password, and role are required' },
+        { success: false, message: 'Name, email, phone, password, and role are required' },
         { status: 400 }
       );
     }
@@ -43,6 +43,7 @@ export async function POST(request: Request) {
     const user = await User.create({
       name: body.name,
       email: body.email,
+      phone: body.phone,
       passwordHash: body.password, // Will be hashed by the pre-save hook in User model
       role: body.role
     });
@@ -52,6 +53,7 @@ export async function POST(request: Request) {
       _id: user._id,
       name: user.name,
       email: user.email,
+      phone: user.phone,
       role: user.role,
       createdAt: user.createdAt
     };

@@ -6,6 +6,7 @@ interface User {
   _id?: string;
   name: string;
   email: string;
+  phone: string;
   password?: string;
   role: "customer" | "admin";
 }
@@ -28,6 +29,7 @@ export default function UserFormModal({
   const [user, setUser] = useState<User>({
     name: "",
     email: "",
+    phone: "",
     password: "",
     role: "customer",
   });
@@ -44,6 +46,7 @@ export default function UserFormModal({
       setUser({
         name: "",
         email: "",
+        phone: "",
         password: "",
         role: "customer",
       });
@@ -57,6 +60,10 @@ export default function UserFormModal({
     if (!user.email?.trim()) newErrors.email = "Email wajib diisi";
     else if (!/^\S+@\S+\.\S+$/.test(user.email))
       newErrors.email = "Format email tidak valid";
+      
+    if (!user.phone?.trim()) newErrors.phone = "Nomor telepon wajib diisi";
+    else if (!/^[0-9\-\+]{6,15}$/.test(user.phone))
+      newErrors.phone = "Format nomor telepon tidak valid";
 
     if (!initialUser && !user.password?.trim())
       newErrors.password = "Password wajib diisi";
@@ -157,6 +164,32 @@ export default function UserFormModal({
             />
             {errors.email && (
               <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+            )}
+          </div>
+
+          <div className="mb-4">
+            <label
+              htmlFor="phone"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >
+              Nomor Telepon
+            </label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              value={user.phone}
+              onChange={handleChange}
+              disabled={loading}
+              className={`w-full rounded border ${
+                errors.phone
+                  ? "border-red-500"
+                  : "border-gray-300 dark:border-gray-700"
+              } bg-white dark:bg-gray-800 py-3 px-4 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 outline-none focus:border-primary focus-visible:shadow-none`}
+              placeholder="Masukkan nomor telepon"
+            />
+            {errors.phone && (
+              <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
             )}
           </div>
 

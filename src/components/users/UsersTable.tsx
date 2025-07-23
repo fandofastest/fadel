@@ -15,6 +15,7 @@ interface User {
   _id?: string;
   name: string;
   email: string;
+  phone: string;
   role: "customer" | "admin";
   createdAt?: string;
 }
@@ -193,6 +194,7 @@ export default function UsersTable() {
                       <TableRow>
                         <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Nama</TableCell>
                         <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Email</TableCell>
+                        <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Telepon</TableCell>
                         <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Role</TableCell>
                         <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Tanggal Daftar</TableCell>
                         <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-end text-theme-xs dark:text-gray-400">Aksi</TableCell>
@@ -212,6 +214,7 @@ export default function UsersTable() {
                               <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">{user.name}</span>
                             </TableCell>
                             <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">{user.email}</TableCell>
+                            <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">{user.phone}</TableCell>
                             <TableCell className="px-4 py-3 text-start">
                               <span className={`px-2 py-1 rounded-full text-xs ${
                                 user.role === 'admin' ?
@@ -274,6 +277,9 @@ export default function UsersTable() {
                           </div>
                           <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                             {user.email}
+                          </div>
+                          <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                            {user.phone}
                           </div>
                           <div className="text-xs text-gray-500 dark:text-gray-500 mb-3">
                             Terdaftar: {user.createdAt ? formatDateTime(user.createdAt) : '-'}
